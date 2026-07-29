@@ -1,0 +1,644 @@
+{
+  "schema_version": 1,
+  "id": "default",
+  "name": "Default Distribution Evaluation",
+  "description": "LLM-extracted structural features with deterministic distribution-based scoring.",
+  "llm": {
+    "provider": "openai-compatible",
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "api_key": ""
+  },
+  "bucket_scheme": {
+    "p25": 2,
+    "p50": 4,
+    "p75": 6,
+    "p90": 8,
+    "above": 10
+  },
+  "features": [
+    {
+      "id": "has_name",
+      "type": "boolean",
+      "extraction_guidance": "Return true only when the YAML/front matter name field exists and is non-empty."
+    },
+    {
+      "id": "has_description",
+      "type": "boolean",
+      "extraction_guidance": "Return true only when the YAML/front matter description field exists and is non-empty."
+    },
+    {
+      "id": "description_word_count",
+      "type": "integer",
+      "extraction_guidance": "Count words in the front matter description only."
+    },
+    {
+      "id": "description_has_domain_term",
+      "type": "boolean",
+      "extraction_guidance": "Return true only for observable domain-specific terms such as React, Python, API, database, testing, Docker, security, cloud, or similar concrete technical terms."
+    },
+    {
+      "id": "description_has_action_verb",
+      "type": "boolean",
+      "extraction_guidance": "Return true for concrete verbs such as build, implement, debug, test, review, refactor, deploy, analyze, validate, generate, optimize, or similar."
+    },
+    {
+      "id": "description_has_trigger_phrase",
+      "type": "boolean",
+      "extraction_guidance": "Return true when the description includes an explicit trigger or usage signal such as use when, when the user, for tasks involving, whenever, or equivalent phrasing."
+    },
+    {
+      "id": "has_input_schema",
+      "type": "boolean",
+      "extraction_guidance": "Return true only when input schema exists and is not empty/generic."
+    },
+    {
+      "id": "has_output_schema",
+      "type": "boolean",
+      "extraction_guidance": "Return true only when output schema exists and is not empty/generic."
+    },
+    {
+      "id": "input_field_count",
+      "type": "integer",
+      "extraction_guidance": "Count concrete schema fields recursively; do not count required lists themselves as fields."
+    },
+    {
+      "id": "output_field_count",
+      "type": "integer",
+      "extraction_guidance": "Count concrete schema fields recursively; do not count required lists themselves as fields."
+    },
+    {
+      "id": "input_required_count",
+      "type": "integer",
+      "extraction_guidance": "Count all fields marked required in the input schema."
+    },
+    {
+      "id": "output_required_count",
+      "type": "integer",
+      "extraction_guidance": "Count all fields marked required in the output schema."
+    },
+    {
+      "id": "schema_term_overlap_count",
+      "type": "integer",
+      "extraction_guidance": "Count schema field/type terms that are also referenced or explained in the description/body. Count conservatively."
+    },
+    {
+      "id": "scenario_with_action_count",
+      "type": "integer",
+      "extraction_guidance": "Count concrete usage scenarios that include a concrete action verb. Return 0 when there are no scenarios."
+    },
+    {
+      "id": "scenario_with_artifact_count",
+      "type": "integer",
+      "extraction_guidance": "Count concrete usage scenarios that name a concrete software artifact such as API, component, migration, schema, service, file, test, pipeline, command, UI, or model."
+    },
+    {
+      "id": "actionable_step_count",
+      "type": "integer",
+      "extraction_guidance": "Count ordered/process steps that are action-oriented and tell the AI what to do."
+    },
+    {
+      "id": "example_with_code_count",
+      "type": "integer",
+      "extraction_guidance": "Count examples that include code or command blocks."
+    },
+    {
+      "id": "example_with_context_count",
+      "type": "integer",
+      "extraction_guidance": "Count examples that include concrete input context or a starting situation."
+    },
+    {
+      "id": "example_with_output_count",
+      "type": "integer",
+      "extraction_guidance": "Count examples that include output, result, expected behavior, command result, or produced artifact."
+    },
+    {
+      "id": "scenario_section_present",
+      "type": "boolean",
+      "extraction_guidance": "Return true for sections like When to use, Usage, Use cases, Scenarios, Triggers, or equivalent explicit trigger section."
+    },
+    {
+      "id": "scenario_count",
+      "type": "integer",
+      "extraction_guidance": "Count distinct concrete situations where the skill should be used. Count conservatively."
+    },
+    {
+      "id": "has_non_goal_or_boundary",
+      "type": "boolean",
+      "extraction_guidance": "Return true only when the document explicitly says do not use, avoid, out of scope, not for, only when, never, or equivalent boundary language."
+    },
+    {
+      "id": "ordered_step_count",
+      "type": "integer",
+      "extraction_guidance": "Count numbered steps, named phases, checklist steps, or explicit workflow steps the AI can follow."
+    },
+    {
+      "id": "has_analysis_step",
+      "type": "boolean",
+      "extraction_guidance": "Return true if at least one process step asks the AI to analyze, inspect, understand, plan, triage, investigate, reproduce, or assess."
+    },
+    {
+      "id": "has_execution_step",
+      "type": "boolean",
+      "extraction_guidance": "Return true if at least one process step asks the AI to implement, write, edit, build, run, create, generate, fix, apply, or ship."
+    },
+    {
+      "id": "has_verification_step",
+      "type": "boolean",
+      "extraction_guidance": "Return true if at least one process step asks the AI to test, verify, validate, check, confirm, measure, benchmark, assert, or review completion."
+    },
+    {
+      "id": "example_count",
+      "type": "integer",
+      "extraction_guidance": "Count explicit example sections, worked examples, samples, demos, and code/command blocks that demonstrate usage."
+    },
+    {
+      "id": "example_linked_to_rule_count",
+      "type": "integer",
+      "extraction_guidance": "Count examples that explicitly connect to a rule, process step, guideline, recommendation, or checklist item."
+    }
+  ],
+  "criteria": [
+    {
+      "id": "name_description_clarity",
+      "label": "Name & Description",
+      "max_score": 10,
+      "steps": [
+        {
+          "id": "description_bucket",
+          "description": "Score description length against corpus percentiles",
+          "action": "set_score_from_bucket",
+          "feature": "description_word_count"
+        },
+        {
+          "id": "missing_name_or_description",
+          "description": "Missing name or description forces score to 0",
+          "condition": {
+            "any": [
+              {
+                "feature": "has_name",
+                "operator": "eq",
+                "value": false
+              },
+              {
+                "feature": "has_description",
+                "operator": "eq",
+                "value": false
+              }
+            ]
+          },
+          "action": "force_score",
+          "value": 0,
+          "stop": true
+        },
+        {
+          "id": "missing_domain_term",
+          "description": "Missing domain-specific term subtracts 2",
+          "condition": {
+            "feature": "description_has_domain_term",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "missing_action_verb",
+          "description": "Missing action verb subtracts 2",
+          "condition": {
+            "feature": "description_has_action_verb",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "missing_trigger_phrase",
+          "description": "Missing trigger phrase subtracts 2",
+          "condition": {
+            "feature": "description_has_trigger_phrase",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "input_output_fitness",
+      "label": "Input & Output Fit",
+      "max_score": 10,
+      "steps": [
+        {
+          "id": "schema_baseline",
+          "description": "Any schema presence starts at 4",
+          "condition": {
+            "any": [
+              {
+                "feature": "has_input_schema",
+                "operator": "eq",
+                "value": true
+              },
+              {
+                "feature": "has_output_schema",
+                "operator": "eq",
+                "value": true
+              }
+            ]
+          },
+          "action": "set_baseline",
+          "value": 4
+        },
+        {
+          "id": "missing_both_schemas",
+          "description": "Missing both input and output schemas forces score to 0",
+          "condition": {
+            "all": [
+              {
+                "feature": "has_input_schema",
+                "operator": "eq",
+                "value": false
+              },
+              {
+                "feature": "has_output_schema",
+                "operator": "eq",
+                "value": false
+              }
+            ]
+          },
+          "action": "force_score",
+          "value": 0,
+          "stop": true
+        },
+        {
+          "id": "single_schema_cap",
+          "description": "Only one schema caps score at 4",
+          "condition": {
+            "any": [
+              {
+                "all": [
+                  {
+                    "feature": "has_input_schema",
+                    "operator": "eq",
+                    "value": true
+                  },
+                  {
+                    "feature": "has_output_schema",
+                    "operator": "eq",
+                    "value": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "feature": "has_input_schema",
+                    "operator": "eq",
+                    "value": false
+                  },
+                  {
+                    "feature": "has_output_schema",
+                    "operator": "eq",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "action": "cap_max",
+          "value": 4
+        },
+        {
+          "id": "input_field_bonus",
+          "description": "Input field count percentile bonus",
+          "condition": {
+            "all": [
+              {
+                "feature": "has_input_schema",
+                "operator": "eq",
+                "value": true
+              },
+              {
+                "feature": "has_output_schema",
+                "operator": "eq",
+                "value": true
+              }
+            ]
+          },
+          "action": "add",
+          "source": "percentile_bonus",
+          "feature": "input_field_count",
+          "scores": {
+            "p50": 2,
+            "p90": 4
+          }
+        },
+        {
+          "id": "output_field_bonus",
+          "description": "Output field count percentile bonus",
+          "condition": {
+            "all": [
+              {
+                "feature": "has_input_schema",
+                "operator": "eq",
+                "value": true
+              },
+              {
+                "feature": "has_output_schema",
+                "operator": "eq",
+                "value": true
+              }
+            ]
+          },
+          "action": "add",
+          "source": "percentile_bonus",
+          "feature": "output_field_count",
+          "scores": {
+            "p50": 2,
+            "p90": 4
+          }
+        },
+        {
+          "id": "required_field_bonus",
+          "description": "Required input or output fields add 1",
+          "condition": {
+            "all": [
+              {
+                "feature": "has_input_schema",
+                "operator": "eq",
+                "value": true
+              },
+              {
+                "feature": "has_output_schema",
+                "operator": "eq",
+                "value": true
+              },
+              {
+                "any": [
+                  {
+                    "feature": "input_required_count",
+                    "operator": "gt",
+                    "value": 0
+                  },
+                  {
+                    "feature": "output_required_count",
+                    "operator": "gt",
+                    "value": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "action": "add",
+          "value": 1
+        },
+        {
+          "id": "schema_overlap_count_bonus",
+          "description": "At least one schema term is referenced in the body adds 1",
+          "condition": {
+            "feature": "schema_term_overlap_count",
+            "operator": "gt",
+            "value": 0
+          },
+          "action": "add",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "usage_scenarios",
+      "label": "Usage Scenarios",
+      "max_score": 10,
+      "steps": [
+        {
+          "id": "scenario_bucket",
+          "description": "Score scenario count against corpus percentiles",
+          "condition": {
+            "feature": "scenario_section_present",
+            "operator": "eq",
+            "value": true
+          },
+          "action": "set_score_from_bucket",
+          "feature": "scenario_count"
+        },
+        {
+          "id": "missing_scenario_section",
+          "description": "Missing usage scenario section forces score to 0",
+          "condition": {
+            "feature": "scenario_section_present",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "force_score",
+          "value": 0,
+          "stop": true
+        },
+        {
+          "id": "boundary_bonus",
+          "description": "Boundary or non-goal adds 2",
+          "condition": {
+            "feature": "has_non_goal_or_boundary",
+            "operator": "eq",
+            "value": true
+          },
+          "action": "add",
+          "value": 2
+        },
+        {
+          "id": "no_scenario_action_count",
+          "description": "No scenario with concrete action subtracts 2",
+          "condition": {
+            "feature": "scenario_with_action_count",
+            "operator": "eq",
+            "value": 0
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "no_scenario_artifact_count",
+          "description": "No scenario with concrete artifact subtracts 2",
+          "condition": {
+            "feature": "scenario_with_artifact_count",
+            "operator": "eq",
+            "value": 0
+          },
+          "action": "subtract",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "step_by_step_process",
+      "label": "Step-by-step Process",
+      "max_score": 10,
+      "steps": [
+        {
+          "id": "step_bucket",
+          "description": "Score ordered steps against corpus percentiles",
+          "condition": {
+            "feature": "ordered_step_count",
+            "operator": "gt",
+            "value": 0
+          },
+          "action": "set_score_from_bucket",
+          "feature": "ordered_step_count"
+        },
+        {
+          "id": "missing_steps",
+          "description": "No ordered process steps forces score to 0",
+          "condition": {
+            "feature": "ordered_step_count",
+            "operator": "eq",
+            "value": 0
+          },
+          "action": "force_score",
+          "value": 0,
+          "stop": true
+        },
+        {
+          "id": "few_steps_cap",
+          "description": "Fewer than 3 steps caps score at 4",
+          "condition": {
+            "feature": "ordered_step_count",
+            "operator": "lt",
+            "value": 3
+          },
+          "action": "cap_max",
+          "value": 4
+        },
+        {
+          "id": "missing_analysis_step",
+          "description": "Missing analysis/planning step subtracts 2",
+          "condition": {
+            "feature": "has_analysis_step",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "missing_execution_step",
+          "description": "Missing execution step subtracts 2",
+          "condition": {
+            "feature": "has_execution_step",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "missing_verification_step",
+          "description": "Missing verification step subtracts 2",
+          "condition": {
+            "feature": "has_verification_step",
+            "operator": "eq",
+            "value": false
+          },
+          "action": "subtract",
+          "value": 2
+        },
+        {
+          "id": "no_actionable_step_count",
+          "description": "No actionable process step subtracts 2",
+          "condition": {
+            "feature": "actionable_step_count",
+            "operator": "eq",
+            "value": 0
+          },
+          "action": "subtract",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "examples_clarity",
+      "label": "Examples Clarity",
+      "max_score": 10,
+      "steps": [
+        {
+          "id": "example_bucket",
+          "description": "Score example count against corpus percentiles",
+          "condition": {
+            "feature": "example_count",
+            "operator": "gt",
+            "value": 0
+          },
+          "action": "set_score_from_bucket",
+          "feature": "example_count"
+        },
+        {
+          "id": "example_base_cap",
+          "description": "Example quantity base score is capped at 4",
+          "condition": {
+            "feature": "example_count",
+            "operator": "gt",
+            "value": 0
+          },
+          "action": "cap_max",
+          "value": 4
+        },
+        {
+          "id": "missing_examples",
+          "description": "No examples forces score to 0",
+          "condition": {
+            "feature": "example_count",
+            "operator": "eq",
+            "value": 0
+          },
+          "action": "force_score",
+          "value": 0,
+          "stop": true
+        },
+        {
+          "id": "example_linked_rule_bonus",
+          "description": "Example linked to rule/process adds 2",
+          "condition": {
+            "feature": "example_linked_to_rule_count",
+            "operator": "gte",
+            "value": 1
+          },
+          "action": "add",
+          "value": 2
+        },
+        {
+          "id": "example_context_count_bonus",
+          "description": "At least one example has context adds 2",
+          "condition": {
+            "feature": "example_with_context_count",
+            "operator": "gte",
+            "value": 1
+          },
+          "action": "add",
+          "value": 2
+        },
+        {
+          "id": "example_output_count_bonus",
+          "description": "At least one example has output adds 2",
+          "condition": {
+            "feature": "example_with_output_count",
+            "operator": "gte",
+            "value": 1
+          },
+          "action": "add",
+          "value": 2
+        },
+        {
+          "id": "example_code_count_bonus",
+          "description": "At least one example has code adds 2",
+          "condition": {
+            "feature": "example_with_code_count",
+            "operator": "gte",
+            "value": 1
+          },
+          "action": "add",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

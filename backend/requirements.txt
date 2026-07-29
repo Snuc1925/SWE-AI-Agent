@@ -1,0 +1,16 @@
+fastapi==0.136.1
+uvicorn[standard]==0.46.0
+pydantic==2.13.4
+SQLAlchemy==2.0.49
+psycopg2-binary==2.9.10
+PyYAML==6.0.3
+lxml==6.1.0
+langgraph==1.1.10
+python-multipart==0.0.28
+scikit-learn==1.6.1
+numpy==2.2.5
+jsonschema
+psutil
+openai
+requests
+langchain-openai

@@ -1,0 +1,32 @@
+[
+  {
+    "recipe_id": "unit_test_gen",
+    "description": "Generate unit tests for a given function or module",
+    "type": "composite",
+    "subtasks": ["analyze_code_structure", "identify_test_cases", "generate_test_code"]
+  },
+  {
+    "recipe_id": "analyze_code_structure",
+    "description": "Analyze code structure",
+    "type": "composite",
+    "subtasks": ["read-file", "extract-metadata"]
+  },
+  {
+    "recipe_id": "read-file",
+    "description": "Read source code file content",
+    "type": "primitive",
+    "skill_id": "file-reader-skill"
+  },
+  {
+    "recipe_id": "extract-metadata",
+    "description": "Extract function names and params",
+    "type": "primitive",
+    "skill_id": "code-parser-skill"
+  },
+  {
+    "recipe_id": "debug-java-npe",
+    "description": "Debug Java NullPointerException",
+    "type": "primitive",
+    "skill_id": "debug-java-null-pointer"
+  }
+]

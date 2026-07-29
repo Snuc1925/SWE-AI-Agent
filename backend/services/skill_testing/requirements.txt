@@ -1,0 +1,11 @@
+pydantic-settings
+langgraph
+openai
+scikit-learn
+fastapi
+uvicorn
+httpx
+pydantic
+python-frontmatter
+pyyaml
+sqlalchemy

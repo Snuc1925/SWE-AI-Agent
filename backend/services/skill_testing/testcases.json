@@ -1,0 +1,16 @@
+[
+  {
+    "id": "TC_01_HappyPath",
+    "filename": "LoginService.java",
+    "code_content": "class User {\n    private String name;\n    public User(String name) { this.name = name; }\n    public String getName() { return this.name; }\n}\n\npublic class LoginService {\n    public void login(User user) {\n        if (user != null) {\n            String name = user.getName();\n        }\n    }\n}",
+    "stacktrace": "NullPointerException at LoginService:42",
+    "message": "Sửa lỗi login, kiểm tra biên dịch thành công"
+  },
+  {
+    "id": "TC_02_StubGeneration",
+    "filename": "LoginService.java",
+    "code_content": "public class LoginService {\n    // Lớp User chưa định nghĩa ở đây, để kích hoạt tính năng tự tạo User.java stub\n    public void login(User user) {\n        String name = user.getName();\n    }\n}",
+    "stacktrace": "error: cannot find symbol: class User at LoginService.java line 3",
+    "message": "Kiểm tra cơ chế rẽ nhánh tự tạo file stub User.java"
+  }
+]

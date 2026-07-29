@@ -1,0 +1,50 @@
+services:
+  # ── Backend Services ───────────────────────────────────────────────────────
+  skill-management:
+    build: ./backend
+    command: uvicorn services.skill_management.main:app --host 0.0.0.0 --port 8001 --reload
+    environment:
+      SKILLS_DIR: /data/skills
+      SKILL_STORE: json
+      JSON_DATABASE_DIR: /database
+      SKILL_JSON_DB_PATH: /database/skills.json
+    volumes:
+      - ./skill-library:/data/skills
+      - ./database:/database
+      - ./backend:/app
+    ports:
+      - "8001:8001"
+
+  skill-evaluation:
+    build: ./backend
+    command: uvicorn services.skill_evaluation.main:app --host 0.0.0.0 --port 8002 --reload
+    environment:
+      SKILLS_DIR: /data/skills
+      JSON_DATABASE_DIR: /database
+      EVALUATION_PROFILE_DIR: /database/evaluation_profiles
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL}
+    volumes:
+      - ./skill-library:/data/skills
+      - ./database:/database
+      - ./backend:/app
+    ports:
+      - "8002:8002"
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    ports:
+      - "3002:5173"
+    depends_on:
+      - skill-management
+      - skill-evaluation
+
+volumes:
+  frontend-node-modules:

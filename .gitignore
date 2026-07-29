@@ -1,0 +1,69 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+backend/venv/
+
+# Environment variables
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite
+
+# Pytest
+.pytest_cache/
+
+# Type checker / linter
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# =========================
+# Node.js
+# =========================
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# AI / ML
+# =========================
+*.pt
+*.bin
+*.onnx
+models/
+cache/
+.huggingface/
+
+
+# Chặn các file tạm thời của SQLite dữ liệu phân tầng
+*.db-shm
+*.db-wal
+*.db
+
+# Chặn sản phẩm biên dịch vật lý của Java Runtime (TASK 4 hiện trường)
+backend/workspace/src/main/java/*.class
+backend/workspace/src/main/java/LoginService

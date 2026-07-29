@@ -1,0 +1,28 @@
+# Bỏ qua môi trường ảo Windows
+venv/
+.venv/
+env/
+
+# Bỏ qua dữ liệu DB local để tránh xung đột file lock
+**/chroma_db/
+**/.chroma_db/
+postgres_data/
+pg-data/
+
+# Bỏ qua file rác hệ thống và IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.env
+
+
+
+__pycache__/
+*.pyc
+db.sqlite3
+.pytest_cache/

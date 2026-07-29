@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReviewCriteria>
+    <!-- Layer: Specification -->
+    <Criterion id="D01" layer="Spec" points="5">
+        <Description>`goal` field present and non-empty</Description>
+        <Rule type="not_empty" path="goal" />
+    </Criterion>
+    
+    <Criterion id="D02" layer="Spec" points="5">
+        <Description>`description` has >= 10 words</Description>
+        <Rule type="min_words" path="description" value="10" />
+    </Criterion>
+
+    <Criterion id="D03" layer="Spec" points="10">
+        <Description>`input` must have `required` fields</Description>
+        <Rule type="min_items" path="input.required" value="1" />
+    </Criterion>
+
+    <Criterion id="D04" layer="Spec" points="10">
+        <Description>`output` must have `properties` defined</Description>
+        <Rule type="not_empty" path="output.properties" />
+    </Criterion>
+
+    <Criterion id="D06" layer="Spec" points="15">
+        <Description>`acceptance_criteria` has >= 2 criteria</Description>
+        <Rule type="min_items" path="acceptance_criteria" value="2" />
+    </Criterion>
+
+    <!-- Layer: Design -->
+    <Criterion id="D08" layer="Design" points="10">
+        <Description>`reasoning_strategy` should be detailed</Description>
+        <Rule type="min_words" path="reasoning_strategy" value="5" />
+    </Criterion>
+
+    <Criterion id="D09" layer="Design" points="10">
+        <Description>Should have `examples` defined</Description>
+        <Rule type="min_items" path="examples" value="1" />
+    </Criterion>
+
+    <!-- Layer: Evaluation -->
+    <Criterion id="D10" layer="Eval" points="15">
+        <Description>`test_cases` must have >= 2 cases</Description>
+        <Rule type="min_items" path="test_cases" value="2" />
+    </Criterion>
+</ReviewCriteria>

@@ -1,0 +1,21 @@
+<FormatCriteria threshold="70">
+  <Criterion id="name" points="25" rule="exists">
+    <Description>Front matter has a non-empty "name" field</Description>
+    <Field path="name" />
+  </Criterion>
+
+  <Criterion id="description" points="25" rule="exists">
+    <Description>Front matter has a non-empty "description" field</Description>
+    <Field path="description" />
+  </Criterion>
+
+  <Criterion id="input" full_points="25" partial_points="15" rule="input_with_required">
+    <Description>Front matter has "input"; full points when a nested field declares "required"</Description>
+    <Field path="input" />
+  </Criterion>
+
+  <Criterion id="output" points="25" rule="exists">
+    <Description>Front matter has a non-empty "output" field</Description>
+    <Field path="output" />
+  </Criterion>
+</FormatCriteria>
